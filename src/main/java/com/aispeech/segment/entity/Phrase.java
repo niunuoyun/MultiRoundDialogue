@@ -1,7 +1,14 @@
 package com.aispeech.segment.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.collect.Lists;
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
@@ -12,7 +19,12 @@ import java.util.*;
  */
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
+@Document(collection = "phrase")
 public class Phrase {
+    @JsonIgnore
+    @Field("_id")
+    private String id;
     /**
      * 词语内容
      */

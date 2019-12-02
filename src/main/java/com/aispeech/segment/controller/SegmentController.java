@@ -4,7 +4,7 @@ import com.aispeech.segment.entity.Phrase;
 import com.aispeech.segment.enumerate.ResponseStatus;
 import com.aispeech.segment.output.ResponseUtil;
 import com.aispeech.segment.segment.seg.Tokenizer;
-import com.aispeech.segment.tools.FileUtils;
+import com.aispeech.segment.tools.QueryCombine;
 import com.aispeech.segment.tools.StringUtil;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +25,8 @@ import java.util.List;
 public class SegmentController {
     @Autowired
     Tokenizer tokenizer;
+    @Autowired
+    QueryCombine queryCombine;
     @PostMapping(value = "segment")
     public JSONObject query(@RequestBody JSONObject requestBody){
         String query = requestBody.getString("query");
@@ -39,7 +41,7 @@ public class SegmentController {
         String second = requestBody.getString("second");
         List<Phrase> wordsSh1 = tokenizer.segment(StringUtil.rmPunctuationAndSpace(first.trim()),false);
         List<Phrase> wordsSh2 = tokenizer.segment(StringUtil.rmPunctuationAndSpace(second.trim()),true);
-        String sentence = FileUtils.questionRelatingToAbove(wordsSh2,wordsSh1);
+        String sentence = queryCombine.questionRelatingToAbove(wordsSh2,wordsSh1);
         return ResponseUtil.okWithData(sentence);
     }
 }

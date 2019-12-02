@@ -1,0 +1,4 @@
+match(n:StartNode{name:'大龙湫'})-[r*]-(m) return n,r,m 查询某个节点的全部关系
+match(person:Person) return person.name limit 10  查找10个person节点的name属性
+match (bacon:Person{name:'肖战'})-[*1..4]-(hollywood) return distinct hollywood 查找与肖战存在4条以内关系的任何演员和电影
+match(n:StartNode{name:'大龙湫'})-[r:RELATIONSHIP{name:"开放时间"}]->(m) return m  查询

@@ -1,13 +1,11 @@
 package com.aispeech.segment;
 
-import com.aispeech.segment.entity.Phrase;
-import com.aispeech.segment.entity.Word;
 import com.aispeech.segment.segment.seg.Tokenizer;
-import com.aispeech.segment.tools.FileUtils;
+import com.aispeech.segment.tools.QueryCombine;
 import org.ansj.domain.Result;
 import org.ansj.domain.Term;
 import org.ansj.splitWord.analysis.DicAnalysis;
-import org.ansj.splitWord.analysis.ToAnalysis;
+import org.apache.lucene.search.suggest.document.CompletionQuery;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nlpcn.commons.lang.tire.domain.Forest;
@@ -26,6 +24,8 @@ public class SegmentApplicationTests {
 
 	@Autowired
 	Tokenizer tokenizer;
+	@Autowired
+	QueryCombine queryCombine;
 	@Test
 	public void contextLoads() {
 	}
@@ -260,7 +260,7 @@ public class SegmentApplicationTests {
 	@Test
 	public void getCombinePhrase() throws IOException {
 		List<String> list = new ArrayList<>();
-		FileUtils.listDirectory(new File("C:\\Users\\work\\segment\\src\\main\\resources\\phrase"), list);
+		queryCombine.listDirectory(new File("C:\\Users\\work\\segment\\src\\main\\resources\\phrase"), list);
 		OutputStream out = new FileOutputStream(new File("C:\\Users\\work\\segment\\src\\main\\resources\\phraseDic.dic"));
 		Map<String,String> wordMap = new HashMap<>();
 		list.stream().forEach(file -> {
@@ -279,7 +279,7 @@ public class SegmentApplicationTests {
 							Set<String> typeSet1 = new HashSet<>(Arrays.asList(typeArr));
 							Set<String> typeSet2 = new HashSet<>(Arrays.asList(typeArr1));
 							typeSet1.addAll(typeSet2);
-							wordMap.put(phrase[0],phrase[0]+":"+FileUtils.getType(typeSet1)+":"+phrase[2]);
+							wordMap.put(phrase[0],phrase[0]+":"+ queryCombine.getType(typeSet1)+":"+phrase[2]);
 						}
 
 					});
