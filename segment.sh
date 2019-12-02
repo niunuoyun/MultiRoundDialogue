@@ -1,0 +1,1 @@
+java -jar segment.jar -server.port = 9092
