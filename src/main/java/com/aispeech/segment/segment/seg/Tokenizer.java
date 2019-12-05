@@ -2,19 +2,14 @@ package com.aispeech.segment.segment.seg;
 
 import com.aispeech.segment.entity.Phrase;
 import com.aispeech.segment.tools.SentenceHandler;
-import org.ansj.app.keyword.KeyWordComputer;
 import org.ansj.domain.Result;
 import org.ansj.domain.Term;
 import org.ansj.recognition.impl.StopRecognition;
-import org.ansj.splitWord.analysis.DicAnalysis;
-import org.ansj.splitWord.analysis.IndexAnalysis;
-import org.ansj.splitWord.analysis.NlpAnalysis;
 import org.ansj.splitWord.analysis.ToAnalysis;
 import org.nlpcn.commons.lang.tire.domain.Forest;
 import org.nlpcn.commons.lang.tire.library.Library;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;

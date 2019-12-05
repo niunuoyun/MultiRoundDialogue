@@ -1,7 +1,6 @@
 package com.aispeech.segment.neo4j.dao;
 
 import com.aispeech.segment.neo4j.node.StartNode;
-import org.springframework.data.neo4j.annotation.Query;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
