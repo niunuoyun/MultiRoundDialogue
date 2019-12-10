@@ -16,8 +16,8 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Created by Huihua Niu
  * on 2019/11/20 11:50
+ * @author Huihua Niu
  */
 @Service
 public class EntityRelationMappingService extends AbstractBaseService {
@@ -28,7 +28,15 @@ public class EntityRelationMappingService extends AbstractBaseService {
     @Override
     public Object insert(JSONObject jsonObject) {
         if (jsonObject != null && jsonObject.containsKey("subjectType") && jsonObject.containsKey("predicateType")) {
+            Query query = new Query();
             EntityRelationMapping entityRelationMapping = JSONObject.parseObject(jsonObject.toJSONString(), EntityRelationMapping.class);
+            query.addCriteria(Criteria.where("subjectType").is(entityRelationMapping.getSubjectType()).and("predicateType").is(entityRelationMapping.getPredicateType()));
+            EntityRelationMapping historyEntity = mongoTemplate.findOne(query,EntityRelationMapping.class);
+            if (historyEntity!=null){
+                historyEntity.setResultType(entityRelationMapping.getResultType());
+                return mongoTemplate.insert(historyEntity);
+
+            }
             return mongoTemplate.insert(entityRelationMapping);
         }
         return null;
@@ -40,9 +48,19 @@ public class EntityRelationMappingService extends AbstractBaseService {
         query.addCriteria(Criteria.where("id").is(id));
         return mongoTemplate.remove(query,EntityRelationMapping.class);
     }
+    public List<EntityRelationMapping> findByType(Set<String> typeSet) {
+        Query query = new Query();
+        query.addCriteria(new Criteria().orOperator(Criteria.where("subjectType").in(typeSet),Criteria.where("predicateType").in(typeSet)));
+        return mongoTemplate.find(query,EntityRelationMapping.class);
+    }
+    public List<EntityRelationMapping> findBySubjectType(Set<String> typeSet) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("subjectType").in(typeSet));
+        return mongoTemplate.find(query,EntityRelationMapping.class);
+    }
     public List<EntityRelationMapping> findByPredicateType(Set<String> typeSet) {
         Query query = new Query();
-        query.addCriteria(Criteria.where("subjectType").nin(typeSet).orOperator(Criteria.where("predicateType").nin(typeSet)));
+        query.addCriteria(Criteria.where("predicateType").in(typeSet));
         return mongoTemplate.find(query,EntityRelationMapping.class);
     }
 }

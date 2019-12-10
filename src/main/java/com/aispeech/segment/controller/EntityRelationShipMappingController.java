@@ -8,7 +8,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * Created by Huihua Niu
+ * @author  Huihua Niu
  * on 2019/7/19 15:16
  */
 @RestController

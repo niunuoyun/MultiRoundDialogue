@@ -2,7 +2,6 @@ package com.aispeech.segment.tools;
 
 import com.aispeech.segment.entity.EntityRelationMapping;
 import com.aispeech.segment.entity.Phrase;
-import com.aispeech.segment.service.EntityRelationMappingService;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -10,10 +9,7 @@ import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -22,8 +18,11 @@ import java.util.stream.Collectors;
  */
 @Component
 public class QueryCombine {
+
     @Autowired
-   private EntityRelationMappingService relationMappingService;
+    ConverStandardTool converStandardTool;
+    @Autowired
+    MatchRuleTool matchRuleTool;
     public  void listDirectory(File dir, List<String> fileList)throws IOException {
         if(!dir.exists())
             throw new IllegalArgumentException("目录："+dir+"不存在.");
@@ -44,24 +43,131 @@ public class QueryCombine {
     }
     public  String questionRelatingToAbove(List<Phrase> currentResult,  List<Phrase> lastResult) {
         Phrase currentFirst =  currentResult.get(0);
-        List<EntityRelationMapping> relationMappings = relationMappingService.findByPredicateType(currentFirst.getTypeSet());
-
         //词性匹配查询
-
+        List<Phrase> LastStandardWord = converStandardTool.getStandardWords(lastResult);
         if (currentResult.size()>1){
-            handlerPhrase(currentResult,lastResult);
+            handlerPhrase(currentResult,LastStandardWord);
         }
+        List<List<EntityRelationMapping>> matchRules = matchRuleTool.getMatchRules(currentResult);
+        System.out.println(matchRules);
+
         String combineQuery ;
+        if (matchRules.size()>0){
+            combineQuery = getMatchResultQuery(LastStandardWord,currentResult,matchRules);
+            if (!StringUtils.isEmpty(combineQuery)) return combineQuery;
+        }
         if (currentFirst.getTypeSet().contains("rr")){
-            combineQuery =  pronounsStart(currentResult,lastResult);
+            combineQuery =  pronounsStart(currentResult,LastStandardWord);
             if (!StringUtils.isEmpty(combineQuery)) return combineQuery;
         }
         if (currentFirst.getTypeSet().contains("v")||currentFirst.getTypeSet().contains("vn") ||(currentFirst.getTypeSet().contains("ques")&& currentResult.size()<=2)){
-            combineQuery = predicteStart(currentResult,lastResult);
+            combineQuery = predicteStart(currentResult,LastStandardWord);
             if (!StringUtils.isEmpty(combineQuery)) return combineQuery;
         }
-        combineQuery = getCombineResult(currentResult,lastResult);
+        combineQuery = getCombineResult(currentResult,LastStandardWord);
         return combineQuery;
+    }
+    /**
+     * 根据规则生成query
+     * @param lastResult
+     * @param rules
+     */
+    public String getMatchResultQuery(List<Phrase> lastResult,List<Phrase> currentResult,List<List<EntityRelationMapping>> rules) {
+
+        if (currentResult.size()>0){
+            //以代词开头的肯定是缺失主语
+            Set<String> subjects = new HashSet<>();
+            Set<String> predicate = new HashSet<>();
+            rules.get(0).forEach(rule->{
+                subjects.add(rule.getSubjectType());
+                predicate.add(rule.getPredicateType());
+            });
+            List<Phrase> subjectPhrase = new ArrayList<>();
+            lastResult.forEach(val->{
+                if (TypeHandlerTool.hasSameTypeSet(val.getTypeSet(),subjects)){
+                    subjectPhrase.add(val);
+                }
+            });
+
+            //记录代词的位置 记录谓语词或者主语词的位置；
+            int pronounsIndex = -1, subjectIndex = -1, predicateIndex = -1;
+            boolean hasAsk = false;
+            for (int i=0;i<currentResult.size();i++){
+                if (TypeHandlerTool.hasSameTypeSet(currentResult.get(i).getTypeSet(),subjects)){
+                    subjectIndex = i;
+                }
+                if (TypeHandlerTool.hasSameTypeSet(currentResult.get(i).getTypeSet(),predicate)){
+                    predicateIndex = i;
+                }
+                if (currentResult.get(i).getTypeSet().contains("r") || currentResult.get(i).getTypeSet().contains("rr")){
+                    pronounsIndex = i;
+                }
+                if(currentResult.get(i).getTypeSet().contains("ask") || currentResult.get(i).getTypeSet().contains("ques")){
+                    hasAsk = true;
+                }
+            }
+            StringBuilder sb = new StringBuilder();
+            //处理有代词的情况
+            if (pronounsIndex>=0 && predicateIndex>=0 && subjectPhrase.size()==1){
+                if (hasAsk){
+                    for (int i=0;i<currentResult.size();i++){
+                        if (i==pronounsIndex){
+                            sb.append(subjectPhrase.get(0).getValue());
+                        }else {
+                            sb.append(currentResult.get(i).getValue());
+                        }
+                    }
+                    return sb.toString();
+                }else {
+                    for (int i=0;i<currentResult.size();i++){
+                        if (i==pronounsIndex){
+                            sb.append(subjectPhrase.get(0).getValue());
+                        }else {
+                            sb.append(currentResult.get(i).getValue());
+                        }
+                    }
+                    if (lastResult.get(lastResult.size()-1).getTypeSet().contains("ask")||lastResult.get(lastResult.size()-1).getTypeSet().contains("ques")){
+                        sb.append(lastResult.get(lastResult.size()-1).getValue());
+                    }
+                    return sb.toString();
+                }
+            }
+            //只有谓语的处理
+            if (pronounsIndex<=0 && predicateIndex>=0 && subjectPhrase.size()==1){
+                if (hasAsk){
+                    for (int i=0;i<currentResult.size();i++){
+                        if (i==predicateIndex){
+                            sb.append(subjectPhrase.get(0).getValue());
+                        }
+                        sb.append(currentResult.get(i).getValue());
+                    }
+                    return sb.toString();
+                }else {
+                    for (int i=0;i<currentResult.size();i++){
+                        if (i==predicateIndex){
+                            sb.append(subjectPhrase.get(0).getValue());
+                        }
+                        sb.append(currentResult.get(i).getValue());
+                    }
+                    if (lastResult.get(lastResult.size()-1).getTypeSet().contains("ask")||lastResult.get(lastResult.size()-1).getTypeSet().contains("ques")){
+                        sb.append(lastResult.get(lastResult.size()-1).getValue());
+                    }
+                    return sb.toString();
+                }
+            }
+            //有主语的处理
+            if (subjectIndex>=0 && predicateIndex<0){
+                for (int i=0;i<lastResult.size();i++){
+                    if (TypeHandlerTool.hasSameTypeSet(currentResult.get(subjectIndex).getTypeSet(),lastResult.get(i).getTypeSet())){
+                        sb.append(currentResult.get(subjectIndex).getValue());
+                    }
+                    sb.append(lastResult.get(i).getValue());
+                }
+                return sb.toString();
+            }
+
+        }
+        return null;
     }
 
 
@@ -198,9 +304,8 @@ public class QueryCombine {
         }
         return null;
     }
-
     /**
-     * 匹配名词形容词
+     * 实体类型匹配
      * @param current
      * @param last
      * @return
@@ -269,6 +374,76 @@ public class QueryCombine {
         }
         return null;
     }
+   /* *//**
+     * 匹配名词形容词
+     * @param current
+     * @param last
+     * @return
+     *//*
+    public String getCombineResult(List<Phrase> current, List<Phrase> last) {
+        List<Integer> index = new ArrayList<>();
+        int currentIndex = -1;
+        //找出上一轮词性和当前词性起始位置相同的地方
+        for (int j = 0; j < current.size(); j++) {
+            for (int i = 0; i < last.size(); i++) {
+                if (hasSameTypeSet(current.get(j).getTypeSet(), last.get(i).getTypeSet())) {
+                    index.add(i);
+                }
+            }
+            if (index.size() > 0) {
+                currentIndex = j;
+                break;
+            }
+        }
+        //如果从第二个开始就相同
+        if (currentIndex == 1) {
+            current.get(currentIndex).setValue(current.get(0).getValue() + current.get(1).getValue());
+            current.remove(0);
+        }
+        if (index.size() == 0) return null;
+        boolean isMatch = true;
+        int hitIndex = -1;
+        for (int i = 0; i < index.size(); i++) {
+            hitIndex = index.get(i);
+            if (hitIndex + current.size() > last.size()) {
+                isMatch = false;
+                break;
+            }
+            for (int j = hitIndex; j < hitIndex + current.size(); j++) {
+                if (!hasSameTypeSet(current.get(j - hitIndex).getTypeSet(), last.get(j).getTypeSet())) {
+                    isMatch = false;
+                    break;
+                } else {
+                    isMatch = true;
+                }
+            }
+            if (isMatch) break;
+        }
+        if (isMatch) {
+            StringBuilder sb = new StringBuilder();
+            if (last.size()>=2){
+                Phrase lastPhrase = last.get(last.size()-1);
+                Phrase penultimatePhrase = last.get(last.size()-2);
+                if (lastPhrase.getTypeSet().contains("num") && penultimatePhrase.getTypeSet().contains("n")){
+                    penultimatePhrase.setValue(lastPhrase.getValue()+penultimatePhrase.getValue());
+                    penultimatePhrase.getTypeSet().add("adj");
+                    last.remove(lastPhrase);
+                }else if (lastPhrase.getTypeSet().contains("n") && penultimatePhrase.getTypeSet().contains("num")){
+                    penultimatePhrase.setValue(lastPhrase.getValue()+penultimatePhrase.getValue());
+                    last.remove(lastPhrase);
+                }
+            }
+            for (int i = 0; i < last.size(); i++) {
+                if (i >= hitIndex && i < hitIndex + current.size() && i >= 0) {
+                    sb.append(current.get(i - hitIndex).getValue());
+                } else {
+                    sb.append(last.get(i).getValue());
+                }
+            }
+            if (sb.length() > 0) return sb.toString();
+        }
+        return null;
+    }*/
 
     /**
      * 以动词或者动名词开头的，用主语替换

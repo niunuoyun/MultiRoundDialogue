@@ -7,18 +7,18 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.util.Set;
+
 /**
- * Created by Huihua Niu
  * on 2019/11/20 11:50
+ * @author Huihua Niu
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Document(collection = "relation_mapping")
 public class EntityRelationMapping {
-   @Field("_id")
-   private String id;
-   private String  subjectType;
+   private String subjectType;
    private String predicateType;
    private String resultType;
 }

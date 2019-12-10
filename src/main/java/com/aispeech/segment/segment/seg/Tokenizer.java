@@ -5,6 +5,7 @@ import com.aispeech.segment.tools.SentenceHandler;
 import org.ansj.domain.Result;
 import org.ansj.domain.Term;
 import org.ansj.recognition.impl.StopRecognition;
+import org.ansj.splitWord.analysis.DicAnalysis;
 import org.ansj.splitWord.analysis.ToAnalysis;
 import org.nlpcn.commons.lang.tire.domain.Forest;
 import org.nlpcn.commons.lang.tire.library.Library;
@@ -32,15 +33,14 @@ public class Tokenizer {
 
     static {
         try {
-            forest = Library.makeForest("C:/Users/work/segment/src/main/resources/library/library.dic");
+            forest = Library.makeForest("C:/Users/work/project/MultiRoundDialogue/src/main/resources/library/default.dic");
             InputStreamReader isr = new InputStreamReader(
-                    new FileInputStream("C:/Users/work/segment/src/main/resources/library/stopWord.dic"));
+                    new FileInputStream("C:/Users/work/project/MultiRoundDialogue/src/main/resources/library/stopWord.dic"));
             BufferedReader bf = new BufferedReader(isr);
 
             String stopWord = null;
             while ((stopWord = bf.readLine()) != null) {
                 stopWord = stopWord.trim();
-                //   StopWords.add(stopWord);
                 stopRecognition.insertStopWords(stopWord);
             }
         } catch (Exception e) {
@@ -49,8 +49,7 @@ public class Tokenizer {
     }
 
     public List<Phrase> segment(String text, boolean isRemoveStopWord) {
-        Result result = ToAnalysis.parse(SentenceHandler.getStandardSentence(text), forest);
-        //Result result = DicAnalysis.parse(SentenceHandler.getStandardSentence(text),forest);
+        Result result = DicAnalysis.parse(SentenceHandler.getStandardSentence(text),forest);
         if (isRemoveStopWord) {
             stopRecognition.recognition(result);
         }
@@ -63,7 +62,7 @@ public class Tokenizer {
 
     public static void main(String[] args) {
         try {
-            forest = Library.makeForest("C:/Users/work/segment/src/main/resources/library/library.dic");
+            forest = Library.makeForest("C:/Users/work/segment/src/main/resources/library/default.dic");
             Result result = ToAnalysis.parse("思必驰的上市时间", forest);
             List<Term> list = result.getTerms();
             System.out.println(list.toString());

@@ -22,9 +22,6 @@ import java.util.*;
 @NoArgsConstructor
 @Document(collection = "phrase")
 public class Phrase {
-    @JsonIgnore
-    @Field("_id")
-    private String id;
     /**
      * 词语内容
      */

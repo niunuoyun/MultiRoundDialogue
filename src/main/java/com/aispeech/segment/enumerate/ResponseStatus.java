@@ -48,7 +48,8 @@ public enum ResponseStatus {
     NO_CONTENTS(315,"input param without contents field or contents is null"),
     NO_CONTENTIDS(316,"input param without contentIds field or contentIds is null"),
     TYPE_NOT_SUPPORT(317,"this type is not supported"),
-    DATA_ALREADY_EXISTS(318,"all the data already exists or no data can be inserted");
+    DATA_ALREADY_EXISTS(318,"all the data already exists or no data can be inserted"),
+    FILEDS_MISSING_OR_FORMAT_WRONG(319,"某些字段缺失或者传递的数据格式有误");
 
     private String message;
 

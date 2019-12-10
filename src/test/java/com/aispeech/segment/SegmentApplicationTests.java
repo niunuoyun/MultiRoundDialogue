@@ -5,7 +5,6 @@ import com.aispeech.segment.tools.QueryCombine;
 import org.ansj.domain.Result;
 import org.ansj.domain.Term;
 import org.ansj.splitWord.analysis.DicAnalysis;
-import org.apache.lucene.search.suggest.document.CompletionQuery;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nlpcn.commons.lang.tire.domain.Forest;
@@ -307,7 +306,7 @@ public class SegmentApplicationTests {
 	@Test
 	public void  getDicPhrase() throws FileNotFoundException {
 		InputStream in = new FileInputStream(new File("C:\\Users\\work\\segment\\src\\main\\resources\\library\\phraseDic.dic"));
-		OutputStream out = new FileOutputStream(new File("C:\\Users\\AISPEECH\\Desktop\\library.dic"));
+		OutputStream out = new FileOutputStream(new File("C:\\Users\\AISPEECH\\Desktop\\default.dic"));
 		try (BufferedReader br = new BufferedReader(new InputStreamReader(in,"utf-8"))) {
 			br.lines().forEach(val->{
 				try {
@@ -333,7 +332,7 @@ public class SegmentApplicationTests {
 	public static void main(String[] args) {
 
 		try {
-			Forest forest = Library.makeForest(SegmentApplicationTests.class.getResourceAsStream("/library/library.dic"));
+			Forest forest = Library.makeForest(SegmentApplicationTests.class.getResourceAsStream("/library/default.dic"));
 			String str = "思必驰的CFO是谁" ;
 			Result result = DicAnalysis.parse(str,forest);
 			List<Term> terms = result.getTerms();

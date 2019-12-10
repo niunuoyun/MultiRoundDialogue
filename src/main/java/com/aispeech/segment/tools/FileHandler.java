@@ -28,7 +28,7 @@ public class FileHandler {
 
     static {
         try {
-            forest = Library.makeForest("C:/Users/work/segment/src/main/resources/library/library.dic");
+            forest = Library.makeForest("C:/Users/work/segment/src/main/resources/library/default.dic");
             InputStreamReader isr = new InputStreamReader(
                     new FileInputStream("C:/Users/work/segment/src/main/resources/library/stopWord.dic"));
             BufferedReader bf = new BufferedReader(isr);

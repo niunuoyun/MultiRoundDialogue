@@ -19,7 +19,7 @@ public class HealthController {
 
     @GetMapping(value = "/healthz")
     public String health(){
-        return "SUCESS";
+        return "SUCCESS";
     }
 
     @GetMapping(value = "rate")
