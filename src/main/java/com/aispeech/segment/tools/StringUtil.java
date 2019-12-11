@@ -17,9 +17,7 @@ public class StringUtil {
 
     //仅支持中文
     public static String rmPunctuationAndSpace(String str){
-//        return str.replaceAll("[^0-9a-zA-Z\\u4e00-\\u9fa5]","");
         return SPECIAL_CHARACTER.matcher(str.toLowerCase()).replaceAll("");
-        //return str.toLowerCase().replaceAll("[\\\\|·《》@\\(（）\\)\\*\\$_`!~#%^&\\*\\+=\\{\\}':;',\\[\\]\\.<>/\\?~！￥%…&\\*（）—\\+\\{\\}【】‘；：”“’。，、？\"\\-\\t\\n\\r\\s]","");
     }
 
     public static List<Character> str2CharList(String str){
