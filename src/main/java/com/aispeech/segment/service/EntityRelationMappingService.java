@@ -34,10 +34,10 @@ public class EntityRelationMappingService extends AbstractBaseService {
             EntityRelationMapping historyEntity = mongoTemplate.findOne(query,EntityRelationMapping.class);
             if (historyEntity!=null){
                 historyEntity.setResultType(entityRelationMapping.getResultType());
-                return mongoTemplate.insert(historyEntity);
+                return mongoTemplate.save(historyEntity);
 
             }
-            return mongoTemplate.insert(entityRelationMapping);
+            return mongoTemplate.save(entityRelationMapping);
         }
         return null;
     }

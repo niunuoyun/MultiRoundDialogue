@@ -100,6 +100,7 @@ public class QueryCombine {
                     predicateIndex = i;
                 }
                 if (currentResult.get(i).getTypeSet().contains("r") || currentResult.get(i).getTypeSet().contains("rr")){
+                    if (pronounsIndex>=0) continue;
                     pronounsIndex = i;
                 }
                 if(currentResult.get(i).getTypeSet().contains("ask") || currentResult.get(i).getTypeSet().contains("ques")){
@@ -133,7 +134,7 @@ public class QueryCombine {
                 }
             }
             //只有谓语的处理
-            if (pronounsIndex<=0 && predicateIndex>=0 && subjectPhrase.size()==1){
+            if (pronounsIndex<0 && predicateIndex>=0 && subjectPhrase.size()==1){
                 if (hasAsk){
                     for (int i=0;i<currentResult.size();i++){
                         if (i==predicateIndex){
@@ -156,14 +157,25 @@ public class QueryCombine {
                 }
             }
             //有主语的处理
-            if (subjectIndex>=0 && predicateIndex<0){
+            if (subjectIndex>=0){
+                int index = 0;boolean isReplace = false,isAppendSub = true;
                 for (int i=0;i<lastResult.size();i++){
-                    if (TypeHandlerTool.hasSameTypeSet(currentResult.get(subjectIndex).getTypeSet(),lastResult.get(i).getTypeSet())){
-                        sb.append(currentResult.get(subjectIndex).getValue());
+                    for(int j=index;j<currentResult.size();j++){
+                        if (TypeHandlerTool.hasSameTypeSet(currentResult.get(j).getTypeSet(),lastResult.get(i).getTypeSet())){
+                            sb.append(currentResult.get(j).getValue());
+                            index = j+1;
+                            isReplace = true;
+                            isAppendSub = false;
+                            break;
+                        }
+                    }
+                    if (!isAppendSub) {
+                        isAppendSub = true;
+                        continue;
                     }
                     sb.append(lastResult.get(i).getValue());
                 }
-                return sb.toString();
+                if (isReplace) return sb.toString();
             }
 
         }

@@ -34,9 +34,9 @@ public class PhraseClassifyService extends AbstractBaseService {
                 historyPhraseClissify.setLabel(phraseClassify.getLabel());
                 historyPhraseClissify.setTripleElement(phraseClassify.getTripleElement());
                 historyPhraseClissify.setKeyType(phraseClassify.isKeyType());
-                return mongoTemplate.insert(historyPhraseClissify);
+                return mongoTemplate.save(historyPhraseClissify);
             }else {
-                return mongoTemplate.insert(phraseClassify);
+                return mongoTemplate.save(phraseClassify);
             }
         }
         return null;
