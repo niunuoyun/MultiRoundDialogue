@@ -25,7 +25,8 @@
 张亚东
 高晓松
 乔杉
-欧阳娜娜乔杉
+欧阳娜娜
+乔杉
 楠楠
 王雪
 陈雨璇
@@ -15885,13 +15886,12 @@ LeahGuan
 雅乐诗唱
 中央人民广播电台少年儿童合唱团
 崔建邦
-NEWBIAO
 沈颖婷
 徐唱
 祁子杭
 刘润洁
 张歆艺
-宣宣（HSUANWEX）
+宣宣
 音乐人强子
 张苗苗
 小甄妮
@@ -21774,80 +21774,21 @@ Tony Larchmont
 Chloe Martini
 Bobby Saint
 白芳菲
-ZDS
-Will Clarke
-KE
-Chus & Ceballos
-Dosem
-Doorly
-Elan Atias
-Sacha Robotti
-Omar
-Playmode
 抢不到
 牛青畾
 杨雅珺
 路松
-魜
-晨曦NoiSerXI
-JIABIN
-冷炫忱Curtis
-F1ySyn
-Asymmetry
-Pegboard Nerds
-Jauz
-Dani
-Kaiolyn
-happyahcin01
+晨曦
+冷炫忱
 静风舞
 方雨晨
 唐宁
 梁俊轩
-EO2
 高皓正
 范萱蔚
 贾晓晨
 邓颖芝
 裕美
-qhey
-Janji
-Cgc
-T.R.
-Johnning
-FoXLvis
-...
-Vivien
-Axlance
-Stuart Matheson
-TR
-Thriving Ivory
-Hogland
-Nico & Vinz
-Levi Lon
-Acesgh
-Kédo Rebelle
-Azealia Banks
-Thomas Jack
-DesTiny
-Michael Brun
-DubVision
-3ENNI
-Loreen
-Beatjunkx
-Zoree
-Cheat Codes
-Quintino
-UNION BL∆CK
-Trim
-Merky Ace
-Wiley
-Redondo
-UnoMas (MIA)
-Teo Mandrelli
-Marcos Casassa
-Unomas (MIA)
-Damon Grey
-UnoMas (Mia)
 宋宇航
 刘珂矣
 阿爆
@@ -21856,23 +21797,14 @@ ProjectHope
 汝雅
 一万光年ACG电台
 万花筒
-归一
-DJ RETINA
 暴走萝莉
 重小烟
-Mukyo木西
-云朵童鞋_avi
-曾小Cee
 韩河天
 小颜
 微 风
 阿南
 晨玺
-Must Save Jane!
-樟脑丸Mothball
 沈曼
-Lio
-Eddy Mitchell
 张赫宣
 李行亮
 王慕然
@@ -21892,39 +21824,6 @@ Mr.陈
 林诗妍
 神秘人
 音狐狸
-Aldo Ceccato
-Beverly Sills
-John Alldis Choir
-Royal Philharmonic Orchestra
-Jeannine Collard
-Elisabeth Schwarzkopf
-Jean-Christophe Benoit
-Michel Sénéchal
-André C
-Christiane Gayraud
-Nicola Ghiuselev
-Ernest Blanc
-George London
-Choeurs René Duclos
-Robert Geay
-Jean-Pierre Laffage
-Victoria de los Angeles
-Gianna d' Angelo
-Königliches Opernhaus Stockholm
-Mario Basiola II
-Ferruccio Mazzoli
-Mariella Adani
-Coro del Teatro dell'Opera, Roma
-Thomas Schippers
-Mirella Freni
-Mario Sereni
-Wladimiro Ganzarolli
-Richard van Allan
-Orchestra of the Royal Opera House, Covent Garden
-Sir Colin Davis
-Montserrat Caballé
-Chorus of the Royal Opera House, Covent Garden
-Ileana Cotrubas
 王力宏
 章子怡
 刘亦菲
@@ -21949,31 +21848,6 @@ Ileana Cotrubas
 郑中基
 蔡卓妍
 胡彦斌
-John Mauceri
-Anna Tomowa-Sintow
-Radio-Symphonie-Orchester Berlin
-Hartmut Welker
-BBC Symphony Orchestra
-Varna Philharmonic Orchestra
-刘烨
-宋丹丹
-Madilyn Bailey
-Upheim
-The Maine
-Higher Altitude
-Gryffin
-Quinn XCII
-Daniel Wilson
-Prince Fox
-ayokay
-Chelsea Cutler
-Kailee Morgue
-Shallou
-hazey eyes
-Jeremy Zucker
-KOLAJ
-GRMM
-Crystal Skies
 乌骨山羊
 白不二
 墨蝶
@@ -21984,71 +21858,13 @@ Crystal Skies
 蕾丝爸爸
 章沐
 井盖儿
-Mc平平
-PUD MUSIC
 讴洋
-Quarterhead
-Imagine Dragons
-NLSN
-Lupid
-Erik Rapp
-Psaiko.Dino
-Gunboi
-quade
-O2O偶像男团
 凤凝然
 归墟原创团队
 章鱼烧正太
 清雅
 微风
 司斓
-Before The Daylight
-Ummet Ozcan
-R3hab
-Lucas & Steve
-Michael Jackson
-Dr. Dre
-Eurythmics
-Coldplay
-Kevin Acero
-Katt Niall
-Chris Crone
-Yton
-MEM
-Ambush
-CwMike
-HYO
-IaNz
-Lil Jon
-RickyKrystal
-MOTI
-Dj Ghost
-Cygnus X
-Kevin Mendoza
-Chronix
-relic乐队
-Timbo Mehrstein Gypsy Jazz Ensemble
-xiv
-Shiloh
-Bikman
-KK Zhang
-柠檬草乐团
-Marshmello
-Against the Current
-MitiS
-Minnesota
-ProtoShredanoid
-Arty
-EnlightEN
-Pentakill
-Ray Molina
-Monsta
-James Egbert
-J Boog
-Dan Negovan
-Creature
-Superior Cornrows
-Daniella Tourgeman
 疯哥张
 吉特巴
 琪琪格

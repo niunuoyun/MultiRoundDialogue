@@ -7,8 +7,8 @@ nr=人名
 nx=百家姓
 ns=地名
 nts=街道
-nam=动物名
-cb=汽车品牌名词
+animal=动物名
+carbrand=汽车品牌名词
 nt=团体机构名
 cn=公司名
 nz=其它专名
@@ -17,8 +17,11 @@ nocr=人物关系称呼
 pred=谓语词（从实体里面提取出来的谓语关系）
 
 
-fd=食物名词
+food=食物名词
+plant = 植物名词
 it=it相关名词
+carbrand=汽车的品牌以及种类
+carparts=汽车部件
 
 #2. 动词
 v=动词
