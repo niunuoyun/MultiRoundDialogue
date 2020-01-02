@@ -22,6 +22,8 @@ plant = 植物名词
 it=it相关名词
 carbrand=汽车的品牌以及种类
 carparts=汽车部件
+company=公司
+street=街道
 
 #2. 动词
 v=动词

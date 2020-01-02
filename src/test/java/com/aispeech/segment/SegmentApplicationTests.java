@@ -2,6 +2,7 @@ package com.aispeech.segment;
 
 import com.aispeech.segment.segment.seg.Tokenizer;
 import com.aispeech.segment.tools.QueryCombine;
+import com.google.common.collect.Lists;
 import org.ansj.domain.Result;
 import org.ansj.domain.Term;
 import org.ansj.splitWord.analysis.DicAnalysis;
@@ -317,6 +318,113 @@ public class SegmentApplicationTests {
 							typeSet = phrase[1].toLowerCase().substring(0,phrase[1].length()-1);
 						}
 						out.write((phrase[0]+"\t"+typeSet+"\t"+phrase[2]+"\r\n").getBytes());
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+
+			});
+		}catch (Exception e){
+			System.out.println("lockSkillTriggerWord.txt read exception, {}"+e);
+		}
+
+	}
+
+	@Test
+	public void  dicHandler() throws FileNotFoundException {
+		InputStream in = new FileInputStream(new File("C:\\Users\\work\\segment\\src\\main\\resources\\library\\library.dic"));
+		OutputStream out = new FileOutputStream(new File("C:\\Users\\AISPEECH\\Desktop\\n.dic"));
+		try (BufferedReader br = new BufferedReader(new InputStreamReader(in,"utf-8"))) {
+			br.lines().forEach(val->{
+				try {
+					String[] phrase = val.split("\t");
+					if (phrase.length==3) {
+						if (phrase[1].equals("n")){
+							out.write((val+"\r\n").getBytes());
+						}
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+
+			});
+		}catch (Exception e){
+			System.out.println("lockSkillTriggerWord.txt read exception, {}"+e);
+		}
+
+	}
+
+	@Test
+	public void  dicOtherHandler() throws FileNotFoundException {
+		InputStream in = new FileInputStream(new File("C:\\Users\\work\\segment\\src\\main\\resources\\library\\library.dic"));
+		OutputStream out = new FileOutputStream(new File("C:\\Users\\AISPEECH\\Desktop\\other.dic"));
+		try (BufferedReader br = new BufferedReader(new InputStreamReader(in,"utf-8"))) {
+			br.lines().forEach(val->{
+				try {
+					String[] phrase = val.split("\t");
+					if (phrase.length==3) {
+						if (!phrase[1].contains("cn") && !phrase[1].contains("food")  &&!phrase[1].contains("n") && !phrase[1].contains("nz") && !phrase[1].contains("nt")&&!phrase[1].contains("ns") && !phrase[1].contains("idiom")){
+							out.write((val+"\r\n").getBytes());
+						}
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+
+			});
+		}catch (Exception e){
+			System.out.println("lockSkillTriggerWord.txt read exception, {}"+e);
+		}
+
+	}
+	@Test
+	public void  dicConjHandler() throws FileNotFoundException {
+		InputStream in = new FileInputStream(new File("C:\\Users\\work\\segment\\src\\main\\resources\\library\\library.dic"));
+		OutputStream out = new FileOutputStream(new File("C:\\Users\\AISPEECH\\Desktop\\conj.dic"));
+		try (BufferedReader br = new BufferedReader(new InputStreamReader(in,"utf-8"))) {
+			br.lines().forEach(val->{
+				try {
+					String[] phrase = val.split("\t");
+					if (phrase.length==3) {
+						if (phrase[1].contains("conj")){
+							out.write((val+"\r\n").getBytes());
+						}
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+
+			});
+		}catch (Exception e){
+			System.out.println("lockSkillTriggerWord.txt read exception, {}"+e);
+		}
+
+	}
+	@Test
+	public void  dicAdvHandler() throws FileNotFoundException {
+		InputStream in = new FileInputStream(new File("C:\\Users\\work\\segment\\src\\main\\resources\\library\\library.dic"));
+		InputStream filter = new FileInputStream(new File("C:\\Users\\AISPEECH\\Desktop\\other.dic"));
+		OutputStream out = new FileOutputStream(new File("C:\\Users\\AISPEECH\\Desktop\\j.dic"));
+		List<String> words = new ArrayList<>();
+		try (BufferedReader br = new BufferedReader(new InputStreamReader(filter,"utf-8"))) {
+			br.lines().forEach(val->{
+				String[] phrase = val.split("\t");
+				if (phrase.length==3) {
+					words.add(phrase[0]);
+				}
+
+			});
+		}catch (Exception e){
+			System.out.println("lockSkillTriggerWord.txt read exception, {}"+e);
+		}
+		try (BufferedReader br = new BufferedReader(new InputStreamReader(in,"utf-8"))) {
+			br.lines().forEach(val->{
+				try {
+					String[] phrase = val.split("\t");
+					if (phrase.length==3) {
+						if (Lists.newArrayList(phrase[1].split(",")).contains("j") && !words.contains(phrase[0])){
+							out.write((val+"\r\n").getBytes());
+						}
 					}
 				} catch (IOException e) {
 					e.printStackTrace();
