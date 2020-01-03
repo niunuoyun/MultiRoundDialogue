@@ -1,8 +1,10 @@
 package com.aispeech.segment;
 
+import com.aispeech.segment.entity.Phrase;
 import com.aispeech.segment.segment.seg.Tokenizer;
 import com.aispeech.segment.tools.QueryCombine;
 import com.google.common.collect.Lists;
+import joptsimple.internal.Strings;
 import org.ansj.domain.Result;
 import org.ansj.domain.Term;
 import org.ansj.splitWord.analysis.DicAnalysis;
@@ -17,6 +19,7 @@ import org.springframework.util.StringUtils;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -436,13 +439,95 @@ public class SegmentApplicationTests {
 		}
 
 	}
+	@Test
+	public void  genaratePhraseDic() throws FileNotFoundException {
+		File file = new File("C:\\Users\\work\\project\\MultiRoundDialogue\\src\\main\\resources\\词语梳理");
+		File[] files = file.listFiles();
+		OutputStream out = new FileOutputStream(new File("C:\\Users\\AISPEECH\\Desktop\\allPhrases.dic"));
+		Map<String,Phrase> phraseMap = new HashMap<>();
+		Arrays.stream(files).forEach(val->{
+			try {
+				InputStream in = new FileInputStream(val);
+				try (BufferedReader br = new BufferedReader(new InputStreamReader(in,"utf-8"))) {
+					br.lines().forEach(data->{
+						String[] word = data.split("\t");
+						if (word.length==3) {
+							Phrase phrase = phraseMap.get(word[0]);
+							if (phrase==null){
+								phrase = new Phrase();
+								phrase.setValue(word[0]);
+								phrase.setTypeSet(phrase.typeToSet(word[1]));
+								phrase.setFrequence(Double.parseDouble(word[2]));
+							}else {
+								double frequence =	Double.parseDouble(word[2])+phrase.getFrequence();
+								phrase.setFrequence(frequence/2);
+								phrase.getTypeSet().addAll(phrase.typeToSet(word[1]));
+							}
+							phraseMap.put(word[0],phrase);
+
+						}
+					});
+				}catch (Exception e){
+					System.out.println("generate dictionary read exception, {}"+e);
+				}
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+		});
+
+		if (phraseMap.size()>0)phraseMap.values().stream().forEach(val->{
+			try {
+				out.write((val.getValue()+"\t"+ Strings.join(val.getTypeSet(),",")+"\t"+val.getFrequence()+"\r\n").getBytes());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		});
+
+	}
+
+	@Test
+	public void handlePredicatePhraseDic() throws FileNotFoundException {
+		InputStream in = new FileInputStream(new File("C:\\Users\\work\\project\\MultiRoundDialogue\\src\\main\\resources\\词语梳理\\predicate.dic"));
+		OutputStream out = new FileOutputStream(new File("C:\\Users\\AISPEECH\\Desktop\\StandPredicate.dic"));
+		OutputStream out1 = new FileOutputStream(new File("C:\\Users\\AISPEECH\\Desktop\\NonPredicate.dic"));
+
+		try (BufferedReader br = new BufferedReader(new InputStreamReader(in,"utf-8"))) {
+			br.lines().forEach(data->{
+				try {
+					String[] word = data.split("\t");
+					if (word.length==3) {
+						Result result = DicAnalysis.parse(word[0].trim());
+						List<Term> terms = result.getTerms();
+						List<String>  lists = new ArrayList<>();
+						terms.forEach(val->{
+							if (val.getNatureStr().equals("u")){
+								lists.add(val.getNatureStr());
+							}
+						});
+						if (lists.size()>0){
+							out1.write((data+"\r\n").getBytes());
+							lists.clear();
+						}else {
+							out.write((data+"\r\n").getBytes());
+						}
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+
+			});
+		}catch (Exception e){
+			System.out.println("generate dictionary read exception, {}"+e);
+		}
+
+	}
 
 	public static void main(String[] args) {
 
 		try {
-			Forest forest = Library.makeForest(SegmentApplicationTests.class.getResourceAsStream("/library/default.dic"));
-			String str = "思必驰的CFO是谁" ;
-			Result result = DicAnalysis.parse(str,forest);
+			//Forest forest = Library.makeForest(SegmentApplicationTests.class.getResourceAsStream("/library/default.dic"));
+			String str = "鸟的种类" ;
+			Result result = DicAnalysis.parse(str);
 			List<Term> terms = result.getTerms();
 			terms.forEach(val->{
 				System.out.println(val.getName()+"===="+val.getNatureStr());
