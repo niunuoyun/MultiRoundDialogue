@@ -33,7 +33,7 @@ public class Tokenizer {
 
     static {
         try {
-            forest = Library.makeForest("C:/Users/work/project/MultiRoundDialogue/src/main/resources/library/default.dic");
+            forest = Library.makeForest("C:/Users/work/project/MultiRoundDialogue/src/main/resources/library/allPhrases.dic");
             InputStreamReader isr = new InputStreamReader(
                     new FileInputStream("C:/Users/work/project/MultiRoundDialogue/src/main/resources/library/stopWord.dic"));
             BufferedReader bf = new BufferedReader(isr);

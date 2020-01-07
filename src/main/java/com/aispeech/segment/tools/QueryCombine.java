@@ -56,7 +56,7 @@ public class QueryCombine {
             combineQuery = getMatchResultQuery(LastStandardWord,currentResult,matchRules);
             if (!StringUtils.isEmpty(combineQuery)) return combineQuery;
         }
-        if (currentFirst.getTypeSet().contains("rr")){
+        if (currentFirst.getTypeSet().contains("r")){
             combineQuery =  pronounsStart(currentResult,LastStandardWord);
             if (!StringUtils.isEmpty(combineQuery)) return combineQuery;
         }

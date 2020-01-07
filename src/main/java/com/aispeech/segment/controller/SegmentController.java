@@ -44,4 +44,13 @@ public class SegmentController {
         String sentence = queryCombine.questionRelatingToAbove(wordsSh2,wordsSh1);
         return ResponseUtil.okWithData(sentence);
     }
+    @PostMapping(value = "combine")
+    public JSONObject combine(@RequestBody JSONObject requestBody){
+        String first = requestBody.getString("first");
+        String second = requestBody.getString("second");
+        List<Phrase> wordsSh1 = tokenizer.segment(StringUtil.rmPunctuationAndSpace(first.trim()),false);
+        List<Phrase> wordsSh2 = tokenizer.segment(StringUtil.rmPunctuationAndSpace(second.trim()),true);
+        String sentence = queryCombine.questionRelatingToAbove(wordsSh2,wordsSh1);
+        return ResponseUtil.okWithData(sentence);
+    }
 }

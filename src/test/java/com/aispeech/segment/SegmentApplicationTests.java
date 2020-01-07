@@ -3,11 +3,15 @@ package com.aispeech.segment;
 import com.aispeech.segment.entity.Phrase;
 import com.aispeech.segment.segment.seg.Tokenizer;
 import com.aispeech.segment.tools.QueryCombine;
+import com.github.stuxuhai.jpinyin.ChineseHelper;
 import com.google.common.collect.Lists;
 import joptsimple.internal.Strings;
+import lombok.val;
 import org.ansj.domain.Result;
 import org.ansj.domain.Term;
+import org.ansj.splitWord.Analysis;
 import org.ansj.splitWord.analysis.DicAnalysis;
+import org.ansj.splitWord.analysis.ToAnalysis;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nlpcn.commons.lang.tire.domain.Forest;
@@ -15,6 +19,7 @@ import org.nlpcn.commons.lang.tire.library.Library;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.util.PathMatcher;
 import org.springframework.util.StringUtils;
 
 import java.io.*;
@@ -465,6 +470,8 @@ public class SegmentApplicationTests {
 							}
 							phraseMap.put(word[0],phrase);
 
+						}else {
+							System.out.println("错误数据："+data);
 						}
 					});
 				}catch (Exception e){
@@ -488,8 +495,8 @@ public class SegmentApplicationTests {
 	@Test
 	public void handlePredicatePhraseDic() throws FileNotFoundException {
 		InputStream in = new FileInputStream(new File("C:\\Users\\work\\project\\MultiRoundDialogue\\src\\main\\resources\\词语梳理\\predicate.dic"));
-		OutputStream out = new FileOutputStream(new File("C:\\Users\\AISPEECH\\Desktop\\StandPredicate.dic"));
-		OutputStream out1 = new FileOutputStream(new File("C:\\Users\\AISPEECH\\Desktop\\NonPredicate.dic"));
+		OutputStream out = new FileOutputStream(new File("C:\\Users\\AISPEECH\\Desktop\\NObject.dic"));
+		OutputStream out1 = new FileOutputStream(new File("C:\\Users\\AISPEECH\\Desktop\\Object.dic"));
 
 		try (BufferedReader br = new BufferedReader(new InputStreamReader(in,"utf-8"))) {
 			br.lines().forEach(data->{
@@ -500,12 +507,17 @@ public class SegmentApplicationTests {
 						List<Term> terms = result.getTerms();
 						List<String>  lists = new ArrayList<>();
 						terms.forEach(val->{
-							if (val.getNatureStr().equals("u")){
+							/*if ((val.getNatureStr().equals("ns")||val.getNatureStr().equals("nr")||val.getNatureStr().equals("nrf"))&&val.getName().length()>1){
+								lists.add(val.getNatureStr());
+							}*/
+							if ((val.getNatureStr().equals("n")||val.getNatureStr().equals("nz"))&&val.getName().length()>1){
 								lists.add(val.getNatureStr());
 							}
 						});
-						if (lists.size()>0){
-							out1.write((data+"\r\n").getBytes());
+					//	String simpleWord = ChineseHelper.convertToSimplifiedChinese(word[0]);
+
+						if (lists.size()>0 && terms.size()==1){
+							out1.write((word[0]+"\t"+word[1]+",n"+"\t"+word[2]+"\r\n").getBytes());
 							lists.clear();
 						}else {
 							out.write((data+"\r\n").getBytes());
@@ -525,14 +537,17 @@ public class SegmentApplicationTests {
 	public static void main(String[] args) {
 
 		try {
-			//Forest forest = Library.makeForest(SegmentApplicationTests.class.getResourceAsStream("/library/default.dic"));
-			String str = "鸟的种类" ;
-			Result result = DicAnalysis.parse(str);
+			Forest forest = Library.makeForest(SegmentApplicationTests.class.getResourceAsStream("/library/allPhrases.dic"));
+			String str = "世界上最高的山峰" ;
+			Result result = DicAnalysis.parse(str,forest);
 			List<Term> terms = result.getTerms();
 			terms.forEach(val->{
 				System.out.println(val.getName()+"===="+val.getNatureStr());
 			});
 			System.out.println(result);
+			String simpleWord = ChineseHelper.convertToSimplifiedChinese(str);
+			System.out.println(simpleWord);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
