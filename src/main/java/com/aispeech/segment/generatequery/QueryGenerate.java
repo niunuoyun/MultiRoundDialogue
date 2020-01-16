@@ -21,16 +21,8 @@ public class QueryGenerate {
         Phrase currentFirst =  currentResult.get(0);
         String combineQuery ;
         // 牡丹花的花期   开花时间呢   主语一般是问**呢或**的呢 谓语一般会带上询问语句 开花时间是什么时候
-        if (currentFirst.getTypeSet().contains("predicate")||currentResult.get(currentResult.size()-1).getTypeSet().contains("ask")){
+        if (currentFirst.getTypeSet().contains("r")||currentFirst.getTypeSet().contains("predicate")||currentResult.get(currentResult.size()-1).getTypeSet().contains("ask")){
             combineQuery = predicateStart(currentResult,LastStandardWord);
-            if (!StringUtils.isEmpty(combineQuery)) return combineQuery;
-        }
-        if (currentFirst.getTypeSet().contains("r")){
-            combineQuery =  pronounsStart(currentResult,LastStandardWord);
-            if (!StringUtils.isEmpty(combineQuery)) return combineQuery;
-        }
-        if (currentFirst.getTypeSet().contains("v")||currentFirst.getTypeSet().contains("vn") ||(currentFirst.getTypeSet().contains("ask")&& currentResult.size()<=2)){
-            combineQuery = verbStart(currentResult,LastStandardWord);
             if (!StringUtils.isEmpty(combineQuery)) return combineQuery;
         }
         combineQuery = getCombineResult(currentResult,LastStandardWord);
@@ -72,11 +64,8 @@ public class QueryGenerate {
                     } else {
                       if (phrase.getTypeSet().contains("a")){
                           phrase.getTypeSet().remove("predicate");
-                          newPhrase.add(phrase);
                       }
                     }
-                    newPhrase.add(phrase);
-                    continue;
                 }
                 newPhrase.add(phrase);
             }
@@ -94,23 +83,18 @@ public class QueryGenerate {
         List<Phrase> newPhrase = new ArrayList<>();
         if (typeIsIncluded(PhraseTypeClassify.entityType,phrases.get(0).getTypeSet())) return phrases;
         if (phrases.size()==2){
-            Phrase phrase;
             if ((phrases.get(0).getTypeSet().contains("n") && phrases.get(1).getTypeSet().contains("m"))
                     ||(phrases.get(0).getTypeSet().contains("m") && phrases.get(1).getTypeSet().contains("a"))
                     ||((phrases.get(0).getTypeSet().contains("a")||phrases.get(0).getTypeSet().contains("predicate"))&&(typeIsIncluded(PhraseTypeClassify.entityType,phrases.get(1).getTypeSet())||phrases.get(1).getTypeSet().contains("predicate")))){
-                phrase = new Phrase();
-            } else {
-                return phrases;
-            }
-            if (phrase!=null){
+                Phrase  phrase = new Phrase();
                 phrase.setValue(phrases.get(0).getValue()+phrases.get(1).getValue());
                 Set<String> type = new HashSet<>();
                 type.add("predicate");
                 phrase.setTypeSet(type);
                 phrase.setFrequence(500);
                 newPhrase.add(phrase);
+                return newPhrase;
             }
-            return newPhrase;
         }else if (phrases.size()==1){
             if (phrases.get(0).getTypeSet().contains("a")){
                 phrases.get(0).getTypeSet().remove("predicate");
@@ -144,35 +128,6 @@ public class QueryGenerate {
         return false;
     }
 
-    /**
-     * 指代词处理，包含人称的
-     * 如果当前一轮有代词，上一轮的内容有人名，动物名，地名，汽车品牌名，如果遇到这些词他的下一个词是uj（的）后面在跟一个名词，就将这三个词拼接到一起
-     * 否则只找出相对应的词性的数据
-     * @param current
-     * @param last
-     * @return
-     */
-    public String pronounsStart(List<Phrase> current, List<Phrase> last){
-        Phrase currentFirst =  current.get(0);
-        List<Integer> LastPredicateIndex = findPredicate(last,0);
-        List<Integer> currentPredicateIndex = findPredicate(current,0);
-        //判断第一轮的词性为代词
-        if (currentFirst.getTypeSet().contains("r")){
-            if (LastPredicateIndex.size()>0 && currentPredicateIndex.size()>0){
-                StringBuilder sb = new StringBuilder();
-                for (int i=0;i<LastPredicateIndex.get(0);i++){
-                    sb.append(last.get(i).getValue());
-                }
-                for (int i=currentPredicateIndex.get(0);i<current.size();i++){
-                    sb.append(current.get(i).getValue());
-                }
-                if (current.get(current.size()-1).getTypeSet().contains("ask")) return sb.toString();
-                if (last.get(last.size()-1).getTypeSet().contains("ask")) return sb.append(last.get(last.size()-1).getValue()).toString();
-                return sb.toString();
-            }
-        }
-        return null;
-    }
     /**
      * 实体类型匹配
      * @param current
@@ -243,90 +198,46 @@ public class QueryGenerate {
         }
         return null;
     }
-    /**
-     * 以动词或者动名词开头的，用主语替换
-     * 如果上一轮内容的分词少于4个，并且当前一轮是根以动词或者动名词开头的
-     * 将上一轮的主语拼接到当前内容里面
-     * @param current
-     * @param last
-     * @return
-     */
-    public String verbStart(List<Phrase> current, List<Phrase> last){
-        Set<String> lastFirst =  last.get(0).getTypeSet();
-        StringBuilder sb = new StringBuilder();
-        //上一轮的分词结果少于4个词
-        if (last.size()<=3){
-            //第一个词的词性是名词或公司或组织或者是人名，直接拼接到第一个词上去
-            if (typeIsIncluded(PhraseTypeClassify.entityType,lastFirst)){
-                sb.append(last.get(0).getValue());
-            }
-            //如果第二个词也是名词或者公司组织人名之类的也可以拼接上去
-            if (last.size()>2 &&typeIsIncluded(PhraseTypeClassify.entityType,last.get(1).getTypeSet())) sb.append(last.get(1).getValue());
-            //将拼接的词做主语，在拼接上以动词开头的所有内容
-            current.stream().forEach(val->sb.append(val.getValue()));
-            return sb.toString();
-        }else {
-            //上一轮的分词结果大于3个
-            int uj=0;
-            //找到连词的位置
-            for (int i=0;i<last.size()-1;i++){
-                if (last.get(i).getTypeSet().contains("u")) {
-                    uj = i;
-                    break;
-                }
-            }
-            //连词的位置在0-最后一个中间
-            if (uj>0 && uj<last.size()-1){
-                //将连词之间的内容拼接起来，做主语
-                for (int i=0;i<=uj+1;i++){
-                    sb.append(last.get(i).getValue());
-                }
-                //将主语和谓语拼接
-                for (int j=0;j<current.size();j++){
-                    sb.append(current.get(j).getValue());
-                }
-                return sb.toString();
-            }
-        }
-        return null;
-    }
 
     /**
-     * 以谓语开头的
+     * 以谓语开头的,或者以代词开头的，这是确实主语的情况
      * @param current
      * @param last
      * @return
      */
     public String predicateStart(List<Phrase> current, List<Phrase> last){
         if (current==null || current.size()==0||last==null|| last.size()==0) return null;
-        StringBuilder sb = new StringBuilder();
+        int subjectIndex = -1,predicateIndex= -1;
         for (int i=0;i<last.size();i++){
-
-        }
-
-        return null;
-    }
-    //查询谓语，有主语且带有谓语
-    private List<Integer> findPredicate(List<Phrase> phrases,int fromIndex){
-        List<Integer> predicate=new ArrayList<>();
-        boolean subjectHas = false;
-        //找到连词的位置
-        for (int i=fromIndex;i<phrases.size();i++){
-            if (!subjectHas){
-                if (typeIsIncluded(PhraseTypeClassify.entityType,phrases.get(i).getTypeSet())||phrases.get(i).getTypeSet().contains("r")){
-                    subjectHas = true;
-                }else {
-                    continue;
-                }
-            }else {
-                if (phrases.get(i).getTypeSet().contains("predicate")) {
-                    predicate.add(i);
-                }
+            if (typeIsIncluded(PhraseTypeClassify.entityType,last.get(i).getTypeSet())){
+                subjectIndex = i;break;
             }
         }
-        return predicate;
+        for (int i=0;i<current.size();i++){
+            if (current.get(i).getTypeSet().contains("v")||current.get(i).getTypeSet().contains("vn")||current.get(i).getTypeSet().contains("a") || current.get(i).getTypeSet().contains("predicate")){
+                predicateIndex = i;break;
+            }
+        }
+        if (subjectIndex>=0 && predicateIndex>=0){
+            StringBuilder sb = new StringBuilder();
+            for (int i=0;i<=subjectIndex;i++){
+                sb.append(last.get(i).getValue());
+            }
+            if (subjectIndex<last.size() && last.get(subjectIndex+1).getTypeSet().contains("u")){
+                sb.append("的");
+            }
+            boolean hasAsk = false;
+            for (int i=predicateIndex;i<current.size();i++){
+               sb.append(current.get(i).getValue());
+               if (current.get(i).getTypeSet().contains("ask")) hasAsk = true;
+            }
+            if (current.get(current.size()-1).getTypeSet().contains("ask")) return sb.toString();
+            if (!hasAsk && typeIsIncluded(PhraseTypeClassify.endEntityType,last.get(last.size()-1).getTypeSet())) sb.append("的"+last.get(last.size()-1).getValue()).toString();
+            if (!hasAsk && last.get(last.size()-1).getTypeSet().contains("ask")) sb.append(last.get(last.size()-1).getValue()).toString();
+            return sb.toString();
+        }
+        return null;
     }
-
     private static boolean typeIsIncluded(String[] basicType,Collection<String> wordType){
         if(basicType==null || wordType==null) return false;
         List<String> basicTypes = Arrays.asList(basicType);
