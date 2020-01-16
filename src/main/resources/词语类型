@@ -22,4 +22,6 @@ carparts=汽车零部件
 predicate=谓语词
 v=动作词
 b=区别词（主任，副主任）
+vehicle=交通工具
+subway=地铁站名
 

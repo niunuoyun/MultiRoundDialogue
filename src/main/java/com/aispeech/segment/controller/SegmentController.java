@@ -2,9 +2,9 @@ package com.aispeech.segment.controller;
 
 import com.aispeech.segment.entity.Phrase;
 import com.aispeech.segment.enumerate.ResponseStatus;
+import com.aispeech.segment.generatequery.QueryGenerate;
 import com.aispeech.segment.output.ResponseUtil;
 import com.aispeech.segment.segment.seg.Tokenizer;
-import com.aispeech.segment.tools.QueryCombine;
 import com.aispeech.segment.tools.StringUtil;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +26,7 @@ public class SegmentController {
     @Autowired
     Tokenizer tokenizer;
     @Autowired
-    QueryCombine queryCombine;
+    QueryGenerate queryCombine;
     @PostMapping(value = "segment")
     public JSONObject query(@RequestBody JSONObject requestBody){
         String query = requestBody.getString("query");
@@ -41,7 +41,7 @@ public class SegmentController {
         String second = requestBody.getString("second");
         List<Phrase> wordsSh1 = tokenizer.segment(StringUtil.rmPunctuationAndSpace(first.trim()),false);
         List<Phrase> wordsSh2 = tokenizer.segment(StringUtil.rmPunctuationAndSpace(second.trim()),true);
-        String sentence = queryCombine.questionRelatingToAbove(wordsSh2,wordsSh1);
+        String sentence = queryCombine.CombineQuery(wordsSh2,wordsSh1);
         return ResponseUtil.okWithData(sentence);
     }
     @PostMapping(value = "combine")
@@ -50,7 +50,7 @@ public class SegmentController {
         String second = requestBody.getString("second");
         List<Phrase> wordsSh1 = tokenizer.segment(StringUtil.rmPunctuationAndSpace(first.trim()),false);
         List<Phrase> wordsSh2 = tokenizer.segment(StringUtil.rmPunctuationAndSpace(second.trim()),true);
-        String sentence = queryCombine.questionRelatingToAbove(wordsSh2,wordsSh1);
+        String sentence = queryCombine.CombineQuery(wordsSh2,wordsSh1);
         return ResponseUtil.okWithData(sentence);
     }
 }

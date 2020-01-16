@@ -410,9 +410,9 @@ public class SegmentApplicationTests {
 	}
 	@Test
 	public void  dicAdvHandler() throws FileNotFoundException {
-		InputStream in = new FileInputStream(new File("C:\\Users\\work\\segment\\src\\main\\resources\\library\\library.dic"));
-		InputStream filter = new FileInputStream(new File("C:\\Users\\AISPEECH\\Desktop\\other.dic"));
-		OutputStream out = new FileOutputStream(new File("C:\\Users\\AISPEECH\\Desktop\\j.dic"));
+		InputStream in = new FileInputStream(new File("C:\\Users\\work\\project\\MultiRoundDialogue\\src\\main\\resources\\library\\library.dic"));
+		InputStream filter = new FileInputStream(new File("C:\\Users\\work\\project\\MultiRoundDialogue\\src\\main\\resources\\library\\allPhrases.dic"));
+		OutputStream out = new FileOutputStream(new File("C:\\Users\\AISPEECH\\Desktop\\ask.dic"));
 		List<String> words = new ArrayList<>();
 		try (BufferedReader br = new BufferedReader(new InputStreamReader(filter,"utf-8"))) {
 			br.lines().forEach(val->{
@@ -430,7 +430,7 @@ public class SegmentApplicationTests {
 				try {
 					String[] phrase = val.split("\t");
 					if (phrase.length==3) {
-						if (Lists.newArrayList(phrase[1].split(",")).contains("j") && !words.contains(phrase[0])){
+						if (!words.contains(phrase[0])){
 							out.write((val+"\r\n").getBytes());
 						}
 					}
@@ -493,6 +493,48 @@ public class SegmentApplicationTests {
 	}
 
 	@Test
+	public void  genarateUniqPhraseDic() throws FileNotFoundException {
+		InputStream filter = new FileInputStream(new File("C:\\Users\\work\\project\\MultiRoundDialogue\\src\\main\\resources\\library\\allPhrases.dic"));
+		OutputStream out = new FileOutputStream(new File("C:\\Users\\AISPEECH\\Desktop\\allPhrases.dic"));
+		Map<String,Phrase> phraseMap = new HashMap<>();
+		try (BufferedReader br = new BufferedReader(new InputStreamReader(filter,"utf-8"))) {
+			br.lines().forEach(data->{
+				String[] word = data.split("\t");
+				if (word.length==3) {
+					Phrase phrase = phraseMap.get(word[0]);
+					Result result = ToAnalysis.parse(word[0].trim());
+					List<Term> terms = result.getTerms();
+					if (phrase == null) {
+						phrase = new Phrase();
+						phrase.setValue(word[0].trim());
+						if (terms.size()==1 &&terms!=null && terms.get(0).getNatureStr().equals("a")){
+							phrase.setTypeSet(phrase.typeToSet("a"));
+						}else {
+							phrase.setTypeSet(phrase.typeToSet(word[1]));;
+						}
+						phrase.setFrequence(Double.parseDouble(word[2]));
+					} else {
+						phrase.getTypeSet().addAll(phrase.typeToSet(word[1]));
+					}
+					phraseMap.put(word[0].trim(), phrase);
+				}else {
+					System.out.println("错误数据："+data);
+				}
+			});
+		}catch (Exception e){
+			System.out.println("generate dictionary read exception, {}"+e);
+		}
+		if (phraseMap.size()>0)phraseMap.values().stream().forEach(val->{
+			try {
+				out.write((val.getValue()+"\t"+ Strings.join(val.getTypeSet(),",")+"\t"+val.getFrequence()+"\r\n").getBytes());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		});
+
+	}
+
+	@Test
 	public void handlePredicatePhraseDic() throws FileNotFoundException {
 		InputStream in = new FileInputStream(new File("C:\\Users\\work\\project\\MultiRoundDialogue\\src\\main\\resources\\词语梳理\\predicate.dic"));
 		OutputStream out = new FileOutputStream(new File("C:\\Users\\AISPEECH\\Desktop\\NObject.dic"));
@@ -538,8 +580,8 @@ public class SegmentApplicationTests {
 
 		try {
 			Forest forest = Library.makeForest(SegmentApplicationTests.class.getResourceAsStream("/library/allPhrases.dic"));
-			String str = "世界上最高的山峰" ;
-			Result result = DicAnalysis.parse(str,forest);
+			String str = "最佳" ;
+			Result result = DicAnalysis.parse(str);
 			List<Term> terms = result.getTerms();
 			terms.forEach(val->{
 				System.out.println(val.getName()+"===="+val.getNatureStr());
